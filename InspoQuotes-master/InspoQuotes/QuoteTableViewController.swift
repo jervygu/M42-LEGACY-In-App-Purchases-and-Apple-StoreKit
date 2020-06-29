@@ -93,9 +93,16 @@ class QuoteTableViewController: UITableViewController, SKPaymentTransactionObser
             if transaction.transactionState == .purchased {
                 // User payment succesful
                 print("Transaction Succesfull")
+                
+                SKPaymentQueue.default().finishTransaction(transaction)
             } else if transaction.transactionState == .failed {
                 // user payment failed
-                print("Transaction Failed")
+                if let error = transaction.error {
+                    let errorDesc = error.localizedDescription
+                    print("Transaction Failed due to error \(errorDesc)")
+                }
+                
+                SKPaymentQueue.default().finishTransaction(transaction)
             }
         }
         
