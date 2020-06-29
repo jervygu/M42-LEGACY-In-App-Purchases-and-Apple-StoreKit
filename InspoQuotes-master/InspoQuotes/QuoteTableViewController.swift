@@ -105,16 +105,23 @@ class QuoteTableViewController: UITableViewController, SKPaymentTransactionObser
                 print("Transaction Succesfull")
                 
                 showPremiumQuotes()
-                
-                UserDefaults.standard.set(true, forKey: productID)
-                
+//                UserDefaults.standard.set(true, forKey: productID)
                 SKPaymentQueue.default().finishTransaction(transaction)
+                
             } else if transaction.transactionState == .failed {
                 // user payment failed
                 if let error = transaction.error {
                     let errorDesc = error.localizedDescription
                     print("Transaction Failed due to error \(errorDesc)")
                 }
+                SKPaymentQueue.default().finishTransaction(transaction)
+                
+            } else if transaction.transactionState == .restored {
+                showPremiumQuotes()
+
+                print("Transaction restored")
+                
+                navigationItem.setRightBarButton(nil, animated: true)
                 
                 SKPaymentQueue.default().finishTransaction(transaction)
             }
@@ -123,6 +130,9 @@ class QuoteTableViewController: UITableViewController, SKPaymentTransactionObser
     }
     
     func showPremiumQuotes() {
+
+        UserDefaults.standard.set(true, forKey: productID)
+        
         quotesToShow.append(contentsOf: premiumQuotes)
         tableView.reloadData()
     }
@@ -144,7 +154,7 @@ class QuoteTableViewController: UITableViewController, SKPaymentTransactionObser
     
     
     @IBAction func restorePressed(_ sender: UIBarButtonItem) {
-        
+        SKPaymentQueue.default().restoreCompletedTransactions()
     }
 
 
